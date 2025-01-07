@@ -29,13 +29,24 @@ def git_commit():
 
 
 def git_push():
-    # Push the committed changes to GitHub
-    result = subprocess.run(['git', 'push'], capture_output=True, text=True)
-    if result.returncode == 0:
-        print("Changes pushed to GitHub successfully.")
-    else:
-        print("Error pushing to GitHub:")
-        print(result.stderr)
+    retries = 3
+    for attempt in range(retries):
+        print(f"Attempting to push changes (Attempt {attempt + 1})...")
+        # Pull the latest changes to avoid conflicts
+        pull_result = subprocess.run(['git', 'pull', '--rebase'], capture_output=True, text=True)
+        if pull_result.returncode != 0:
+            print(f"Error during git pull: {pull_result.stderr}")
+            break
+
+        # Push the changes
+        push_result = subprocess.run(['git', 'push'], capture_output=True, text=True)
+        if push_result.returncode == 0:
+            print("Changes pushed to GitHub successfully.")
+            return
+        else:
+            print(f"Error pushing to GitHub (Attempt {attempt + 1}): {push_result.stderr}")
+    print("Failed to push changes after 3 attempts.")
+
 
 
 def update_cron_with_random_time():
