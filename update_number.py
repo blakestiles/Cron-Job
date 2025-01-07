@@ -50,6 +50,13 @@ def git_push():
 
 
 def update_cron_with_random_time():
+    import platform
+    if platform.system() == "Windows":
+        print("Cron jobs are not supported on Windows. Please use Task Scheduler.")
+        return
+
+    print("Updating cron job with a random time...")
+    
     # Generate random hour (0-23) and minute (0-59)
     random_hour = random.randint(0, 23)
     random_minute = random.randint(0, 59)
